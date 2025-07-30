@@ -29,10 +29,15 @@ const GROUP_KEYS = [
   "@_calculateFromGridsGroup",
   "displayMemberGroup",
   "@_displayMemberGroup",
+  "WorkflowExecutionGroup",
   "@_WorkflowExecutionGroup",
+  "CertificationSignOffGroup",
   "@_CertificationSignOffGroup",
+  "JournalProcessGroup",
   "@_JournalProcessGroup",
+  "JournalApprovalGroup",
   "@_JournalApprovalGroup",
+  "JournalPostGroup",
   "@_JournalPostGroup",
 ];
 
@@ -107,10 +112,24 @@ function transformGroupFields(node: any, targetGroup: string) {
   if (typeof node !== "object" || node === null) return;
 
   for (const key of Object.keys(node)) {
+    const value = node[key];
+
+    if (key === "attribute" && typeof value === "object") {
+      const attributes = Array.isArray(value) ? value : [value];
+
+      attributes.forEach((attr: any) => {
+        const attrName = attr?.["@_attributeName"];
+        if (GROUP_KEYS.includes(attrName)) {
+          attr["@_attributeValue"] = targetGroup;
+        }
+      });
+    }
+
+    // Regular key replacement (either attribute or element)
     if (GROUP_KEYS.includes(key)) {
       node[key] = targetGroup;
-    } else {
-      transformGroupFields(node[key], targetGroup);
+    } else if (typeof value === "object") {
+      transformGroupFields(value, targetGroup); // Recurse into children
     }
   }
 }
