@@ -50,7 +50,7 @@ const builder = new XMLBuilder({
   suppressEmptyNode: false,
   preserveOrder: false,
   cdataPropName: "#cdata",
-  processEntities: false,
+  processEntities: true,
   suppressBooleanAttributes: false,
 });
 
